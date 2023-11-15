@@ -85,7 +85,9 @@ public class StudentServiceImpl implements StudentService {
             newStudent.setGroup(group);
             return newStudent;
         });
-
+        int rat = student.getTotalScore();
+        rat += rating;
+        student.setTotalScore(rat);
         ItemRating itemRating = new ItemRating(item, rating);
         itemRating.setStudent(student);
         itemRatingRepository.save(itemRating);
