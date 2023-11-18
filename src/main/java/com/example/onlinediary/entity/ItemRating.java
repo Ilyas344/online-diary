@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Objects;
 
@@ -19,11 +18,11 @@ public class ItemRating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Column(name = "item")
     private String itemId;
     private int rating;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Student student;
 
@@ -39,19 +38,17 @@ public class ItemRating {
         this.rating = rating;
     }
 
+
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         ItemRating that = (ItemRating) o;
-        return Objects.equals(getId(), that.getId());
+        return rating == that.rating && Objects.equals(id, that.id) && Objects.equals(itemId, that.itemId) && Objects.equals(student, that.student);
     }
 
     @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    public int hashCode() {
+        return Objects.hash(id, itemId, rating, student);
     }
 }

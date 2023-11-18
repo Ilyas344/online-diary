@@ -1,20 +1,19 @@
 package com.example.onlinediary.DTO;
 
 
-
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-import java.io.Serializable;
 
 
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Сущность для поиска среднего рейтинга студента")
-public class AverageScoreDto implements Serializable {
+public class AverageScoreDto {
     private String family;
     private String name;
     private String group;

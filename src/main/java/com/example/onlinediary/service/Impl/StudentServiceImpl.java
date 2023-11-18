@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -24,12 +25,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<AverageScoreDto> getAverageScore(String group) {
         log.info("getAverageScore group {}", group);
-        List<AverageScoreDto> averageScoreDto = studentRepository.getAverageScore(group);
-        if (averageScoreDto.isEmpty()) {
-            log.warn("Студентов в {} нет", group);
-            throw new StudentNotFoundException("Студентов в " + group + " нет");
-        }
-        return averageScoreDto;
+        return studentRepository.getAverageScore(group);
     }
 
 
@@ -40,18 +36,16 @@ public class StudentServiceImpl implements StudentService {
         String group = changeRatingDto.getGroup();
         String item = changeRatingDto.getItemRatings().getItemId();
         int rating = changeRatingDto.getItemRatings().getRating();
-        var optionalStudent = studentRepository.findStudent(family, name, group);
-        var student = optionalStudent.orElseThrow(() -> new StudentNotFoundException("Студент не найден"));
-        int totalScore;
-        ItemRating itemRating = itemRatingRepository.findByItemId(item, student.getId());
-        if (itemRating == null) {
-            itemRating = new ItemRating(item, rating);
-            itemRating.setStudent(student);
-            totalScore = rating;
-        } else {
-            totalScore = rating - itemRating.getRating();
-        }
+        Optional<Student> optionalStudent = studentRepository.findStudent(family, name, group);
+        Student student = optionalStudent.orElseThrow(() -> new StudentNotFoundException("Студент не найден"));
 
+        Optional<ItemRating> optionalItemRating = itemRatingRepository.findByItemId(item, student.getId());
+        ItemRating  itemRating = optionalItemRating.orElseGet(() -> {
+            ItemRating newItemRating = new ItemRating(item, rating);
+            newItemRating.setStudent(student);
+            return newItemRating;
+        });
+        int totalScore =(itemRating.getRating() == 0)?rating: rating - itemRating.getRating();
         student.setTotalScore(student.getTotalScore() + totalScore);
         itemRating.setRating(rating);
         student.getItemRatings().add(itemRating);
@@ -59,12 +53,6 @@ public class StudentServiceImpl implements StudentService {
         itemRatingRepository.save(itemRating);
         return new ChangeRatingDto(family, name, group, student.getTotalScore(), new ItemRatingDto(item, rating));
 
-    }
-
-    @Override
-    public AddStudentDto addStudent(Student student) {
-        studentRepository.save(student);
-        return new AddStudentDto(student.getId(), student.getFamily(), student.getName(), student.getAge(), student.getGroup());
     }
 
     @Override
@@ -76,18 +64,17 @@ public class StudentServiceImpl implements StudentService {
         String group = addItemRatingDto.getGroup();
         String item = addItemRatingDto.getItemRatingDto().getItemId();
         int rating = addItemRatingDto.getItemRatingDto().getRating();
-        var optionalStudent = studentRepository.findStudent(family, name, group);
+        Optional<Student> optionalStudent = studentRepository.findStudent(family, name, group);
         Student student = optionalStudent.orElseGet(() -> {
             Student newStudent = new Student();
             newStudent.setFamily(family);
             newStudent.setAge(age);
             newStudent.setName(name);
             newStudent.setGroup(group);
+            studentRepository.save(newStudent);
             return newStudent;
         });
-        int rat = student.getTotalScore();
-        rat += rating;
-        student.setTotalScore(rat);
+        student.setTotalScore(student.getTotalScore()+rating);
         ItemRating itemRating = new ItemRating(item, rating);
         itemRating.setStudent(student);
         itemRatingRepository.save(itemRating);

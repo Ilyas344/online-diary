@@ -4,7 +4,6 @@ import com.example.onlinediary.DTO.AddItemRatingDto;
 import com.example.onlinediary.DTO.AddStudentDto;
 import com.example.onlinediary.DTO.AverageScoreDto;
 import com.example.onlinediary.DTO.ChangeRatingDto;
-import com.example.onlinediary.entity.Student;
 import com.example.onlinediary.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,8 +11,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/student")
 @RequiredArgsConstructor
+@Validated
 @Tag(name = "Студенты", description = "Методы для работы со студентами")
 
 public class StudentController {
@@ -48,21 +50,10 @@ public class StudentController {
             })
     @PutMapping("/")
     public ResponseEntity<ChangeRatingDto> updateRating(
-            @RequestBody ChangeRatingDto changeRatingDto) {
+            @Valid @RequestBody ChangeRatingDto changeRatingDto) {
         return ResponseEntity.ok(service.updateRating(changeRatingDto));
     }
 
-    @Operation(summary = "Добавить студента",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "OK",
-                            content = {@Content(
-                                    schema = @Schema(implementation = AddStudentDto.class))})
-            })
-    @PostMapping("/")
-    public ResponseEntity<AddStudentDto> addStudent(
-            @RequestBody Student student) {
-        return ResponseEntity.ok(service.addStudent(student));
-    }
 
     @Operation(summary = "Добавить студента с предметом и оценкой",
             responses = {
@@ -72,7 +63,7 @@ public class StudentController {
             })
     @PostMapping("/items")
     public ResponseEntity<AddItemRatingDto> addItemsAndRatings(
-            @RequestBody AddItemRatingDto addItemRatingDto) {
+            @Valid @RequestBody AddItemRatingDto addItemRatingDto) {
 
         return ResponseEntity.ok(service.addItemsAndRatingsToStudent(addItemRatingDto));
 

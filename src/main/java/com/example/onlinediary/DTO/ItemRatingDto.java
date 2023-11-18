@@ -8,13 +8,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.io.Serializable;
 
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Сущность для рейтинга студента")
-public class ItemRatingDto implements Serializable {
+public class ItemRatingDto {
     private String itemId;
     @Min(1)
     @Max(5)

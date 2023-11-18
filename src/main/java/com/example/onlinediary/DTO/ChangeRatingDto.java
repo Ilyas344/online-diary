@@ -1,12 +1,11 @@
 package com.example.onlinediary.DTO;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-
-import java.io.Serializable;
 
 
 /**
@@ -16,12 +15,13 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Сущность для изменения рейтинга студента")
-public class ChangeRatingDto implements Serializable {
+public class ChangeRatingDto {
     String family;
     String name;
     String group;
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     Integer totalScore;
+    @Valid
     ItemRatingDto itemRatings;
 
 

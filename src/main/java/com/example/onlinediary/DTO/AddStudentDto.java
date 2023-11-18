@@ -6,14 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import java.io.Serializable;
+
 
 
 @Data
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Сущность для добавления студента")
-public class AddStudentDto implements Serializable {
+public class AddStudentDto {
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     Long id;
     String family;
@@ -21,9 +21,6 @@ public class AddStudentDto implements Serializable {
     @Positive(message = "Age must be positive")
     int age;
     String group;
-
-
-
 
 
 }
