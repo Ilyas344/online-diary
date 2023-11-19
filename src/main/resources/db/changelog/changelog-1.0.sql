@@ -1,23 +1,24 @@
 --liquibase formatted sql
 
 --changeset Ilyas:1
-create table if not exists students
+CREATE TABLE IF NOT EXISTS students
 (
-    id          bigserial primary key,
-    age         integer not null,
-    family      varchar(255) not null,
-    groups      varchar(255) not null,
-    name        varchar(255) not null,
-    total_score integer
+    id          bigserial PRIMARY KEY,
+    age         integer      NOT NULL,
+    family      varchar(255) NOT NULL,
+    groups      varchar(255) NOT NULL,
+    name        varchar(255) NOT NULL,
+    total_score integer,
+    CONSTRAINT uq_students_family_name_group UNIQUE (family, name, groups)
 );
 
-create table if not exists item_ratings
+CREATE TABLE IF NOT EXISTS item_ratings
 (
-    id         bigserial primary key,
-    item       varchar(255) not null,
-    rating     integer not null,
+    id         bigserial PRIMARY KEY,
+    item       varchar(255) NOT NULL,
+    rating     integer      NOT NULL,
     student_id bigint,
-    constraint fk_item_ratings_students
-        foreign key (student_id)
-            references students (id)
+    CONSTRAINT fk_item_ratings_students
+        FOREIGN KEY (student_id)
+            REFERENCES students (id)
 );
